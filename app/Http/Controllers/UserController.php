@@ -1,49 +1,68 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    // Display a listing of users
     public function index()
     {
-        return "This is the list of all users.";
+        $users = User::all();
+        return view('users.index', compact('users'));
     }
 
-    // Show the form for creating a new user
     public function create()
     {
-        return "This is the create user form.";
+    return view('users.create');
     }
 
-    // Store a newly created user
     public function store(Request $request)
     {
-        return "New user has been stored (simulated).";
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6'
+        ]);
+
+        User::create([
+            'name'  => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+
+        return redirect()->route('users.index')->with('success', 'User created successfully');
     }
 
-    // Display a specific user
-    public function show($id)
+    public function show(User $user)
     {
-        return "Showing user with ID: " . $id;
+        return view('users.show', compact('user'));
     }
 
-    // Show the form for editing a specific user
-    public function edit($id)
+    public function edit(User $user)
     {
-        return "This is the edit form for user with ID: " . $id;
+        return view('users.edit', compact('user'));
     }
 
-    // Update a specific user
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        return "User with ID " . $id . " has been updated (simulated).";
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,'.$user->id
+        ]);
+
+        $user->update([
+            'name'  => $request->name,
+            'email' => $request->email,
+        ]);
+
+        return redirect()->route('users.index')->with('success', 'User updated');
     }
 
-    // Delete a specific user
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        return "User with ID " . $id . " has been deleted (simulated).";
+        $user->delete();
+        return redirect()->route('users.index')->with('success','User deleted');
     }
 }
