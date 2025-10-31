@@ -1,11 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit User</title>
-</head>
-<body>
+@extends('layouts.app')
 
-<h1>Edit User</h1>
+@section('content')
+<h1>Edit Comment</h1>
+
+<form action="{{ route('comments.update', $comment->id) }}" method="POST">
+    @csrf
+    @method('PUT')
+    <label>User:</label>
+    <select name="user_id">
+        @foreach($users as $user)
+            <option value="{{ $user->id }}" {{ $user->id == $comment->user_id ? 'selected' : '' }}>{{ $user->name }}</option>
+        @endforeach
+    </select>
+    <br>
+    <label>Post:</label>
+    <select name="post_id">
+        @foreach($posts as $post)
+            <option value="{{ $post->id }}" {{ $post->id == $comment->post_id ? 'selected' : '' }}>{{ $post->title }}</option>
+        @endforeach
+    </select>
+    <br>
+    <label>Body:</label>
+    <textarea name="body">{{ old('body', $comment->body) }}</textarea>
+    <br>
+    <button type="submit">Update</button>
+</form>
 
 @if ($errors->any())
     <div style="color:red">
@@ -16,22 +35,4 @@
         </ul>
     </div>
 @endif
-
-<form action="{{ route('users.update', $user->id) }}" method="POST">
-    @csrf
-    @method('PUT')
-
-    <label>Name:</label>
-    <input type="text" name="name" value="{{ $user->name }}"><br><br>
-
-    <label>Email:</label>
-    <input type="email" name="email" value="{{ $user->email }}"><br><br>
-
-    <button type="submit">Update</button>
-</form>
-
-<br>
-<a href="{{ route('users.index') }}">Back</a>
-
-</body>
-</html>
+@endsection

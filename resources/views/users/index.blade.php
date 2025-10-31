@@ -1,44 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Users</title>
-</head>
-<body>
+@extends('layouts.app')
 
-<h1>User List</h1>
-
-<a href="{{ route('users.create') }}">Create User</a>
+@section('content')
+<h1>Comments</h1>
+<a href="{{ route('comments.create') }}">Create New Comment</a>
 
 @if(session('success'))
-    <p style="color: green">{{ session('success') }}</p>
+    <p style="color:green">{{ session('success') }}</p>
 @endif
 
-<table border="1" cellpadding="10">
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Actions</th>
-    </tr>
-
-    @foreach($users as $user)
-    <tr>
-        <td>{{ $user->id }}</td>
-        <td>{{ $user->name }}</td>
-        <td>{{ $user->email }}</td>
-        <td>
-            <a href="{{ route('users.show', $user->id) }}">View</a> | 
-            <a href="{{ route('users.edit', $user->id) }}">Edit</a>
-
-            <form method="POST" action="{{ route('users.destroy', $user->id) }}" style="display:inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" onclick="return confirm('Delete user?')">Delete</button>
-            </form>
-        </td>
-    </tr>
-    @endforeach
-</table>
-
-</body>
-</html>
+@foreach($comments as $comment)
+    <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
+        <p>{{ $comment->user->name }} on Post: {{ $comment->post->title }}</p>
+        <p>{{ $comment->body }}</p>
+        <a href="{{ route('comments.edit', $comment->id) }}">Edit</a>
+        <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" style="display:inline;">
+            @csrf
+            @method('DELETE')
+            <button type="submit" onclick="return confirm('Are you sure?')">Delete</button>
+        </form>
+    </div>
+@endforeach
+@endsection
